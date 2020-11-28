@@ -1,0 +1,10 @@
+{
+    "addresses": {
+        "redis": "redis.local",
+        "c64": "192.168.1.14"
+    },
+    "commands": {
+        "create_prg": "petcat -w2 -o $OUT",
+        "record": "ffmpeg -f v4l2 -i /dev/video0 -t 30 -c:v h264_omx -profile:v high -b:v 2500k $OUT.mkv"
+    }
+}
