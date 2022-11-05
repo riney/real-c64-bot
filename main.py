@@ -7,7 +7,7 @@ from redis import Redis
 from rq import Queue
 from TwitterAPI import (TwitterAPI, TwitterConnectionError, TwitterOAuth, TwitterRequestError)
 
-from realc64bot.workers import handle
+from realc64bot.workers import execute_tweet
 
 CONFIG_FILE = 'config.json'
 QUERY = 'to:realc64bot'
@@ -31,8 +31,8 @@ def load_configuration():
 # REDIS METHODS
 def connect_to_redis():
 	global redis, q
-	print(f"Connecting to job queue at {config['redis']['address']}")
-	redis = Redis(config['redis']['address'], config['redis']['port'], config['redis']['password'])
+	print(f"Connecting to job queue at {config['redis']['host']}")
+	redis = Redis(host=config['redis']['host'], port=config['redis']['port'])
 	q = Queue(connection=redis)
 
 # TWITTER API METHODS
@@ -86,76 +86,84 @@ def enable_requests_debugging():
 		requests_log.setLevel(logging.DEBUG)
 		requests_log.propagate = True
 
-# Connect to Twitter
-try:
-	enable_requests_debugging()
-	load_configuration()
-	connect_to_redis()
+# REDIS METHODS
+def handle_tweet(tweet):
+	print("Enqueueing tweet")
+	q.enqueue(execute_tweet, tweet) 
 
-	o = TwitterOAuth.read_file('./credentials.txt')
-	api = TwitterAPI(o.consumer_key, o.consumer_secret, auth_type='oAuth2', api_version='2')
+def main():
+	try:
+		enable_requests_debugging()
+		load_configuration()
+		connect_to_redis()
 
-	# ADD STREAM RULES
-	print("Configuring stream rules.")
-	delete_all_rules(api)
-	set_rules(api, [{ 'value': QUERY }])
-	get_rules(api)
+		o = TwitterOAuth.read_file('./credentials.txt')
+		api = TwitterAPI(o.consumer_key, o.consumer_secret, auth_type='oAuth2', api_version='2')
 
-	# START STREAM
-	print("Starting.")
-	while True:
-		try:
-			stream = api.request('tweets/search/stream')
-			if stream.status_code != 200: 
-				print(f"Loop start received status code {stream.status_code}, exiting")
-				exit()
-			for item in stream:
-				print(f"Received item: {item}")
-				if 'text' in item:
-					print(item['text'])
-				elif 'disconnect' in item:
-					event = item['disconnect']
-					print('Received disconnect')
-					if event['code'] in [2,5,6,7]:
-						# something needs to be fixed before re-connecting
-						print(f"Event code is {event['code']}")
-						raise Exception(event['reason'])
-					else:
-						print('Other problem; re-trying')
-						stream = None
-						time.sleep(5)
-						break
-		except TwitterRequestError as e:
-			if e.status_code < 500:
-				# something needs to be fixed before re-connecting
-				print("Real bad problem; falling out")
-				raise
-			else:
+		# ADD STREAM RULES
+		print("Configuring stream rules.")
+		delete_all_rules(api)
+		set_rules(api, [{ 'value': QUERY }])
+		get_rules(api)
+
+		# START STREAM
+		print("Starting.")
+		while True:
+			try:
+				stream = api.request('tweets/search/stream')
+				if stream.status_code != 200: 
+					print(f"Loop start received status code {stream.status_code}, exiting")
+					exit()
+				for item in stream:
+					print(f"Received item: {item}")
+					if 'data' in item:
+						handle_tweet(item['data'])
+					elif 'disconnect' in item:
+						event = item['disconnect']
+						print('Received disconnect')
+						if event['code'] in [2,5,6,7]:
+							# something needs to be fixed before re-connecting
+							print(f"Event code is {event['code']}")
+							raise Exception(event['reason'])
+						else:
+							print('Other problem; re-trying')
+							stream = None
+							time.sleep(5)
+							break
+			except TwitterRequestError as e:
+				if e.status_code < 500:
+					# something needs to be fixed before re-connecting
+					print("Real bad problem; falling out")
+					raise
+				else:
+					# temporary interruption, re-try request
+					print('Twitter request error, re-trying.')
+					stream = None
+					time.sleep(5)
+					pass
+			except TwitterConnectionError as tce:
 				# temporary interruption, re-try request
-				print('Twitter request error, re-trying.')
+				print(f"Twitter connection error, re-trying.")
+				print(tce)
+
 				stream = None
 				time.sleep(5)
 				pass
-		except TwitterConnectionError as tce:
-			# temporary interruption, re-try request
-			print(f"Twitter connection error, re-trying.")
-			print(tce)
-
-			stream = None
-			time.sleep(5)
-			pass
 
 
-except TwitterRequestError as e:
-	print('Top-level TwitterRequestError caught.')
-	print(e.status_code)
-	for msg in iter(e):
-		print(msg)
+	except TwitterRequestError as e:
+		print('Top-level TwitterRequestError caught.')
+		print(e.status_code)
+		for msg in iter(e):
+			print(msg)
 
-except TwitterConnectionError as e:
-	print('Top-level TwitterConnectionError caught.')
-	print(e)
+	except TwitterConnectionError as e:
+		print('Top-level TwitterConnectionError caught.')
+		print(e)
 
-except Exception as e:
-	print('Top-level Exception caught.')
-	print(e)
+	except Exception as e:
+		print('Top-level Exception caught.')
+		print(e)
+
+if __name__ == "__main__":
+	main()
