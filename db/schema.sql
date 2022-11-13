@@ -1,4 +1,3 @@
-
 CREATE TABLE jobs (
     id              SERIAL PRIMARY KEY,
     message_source  TEXT,
