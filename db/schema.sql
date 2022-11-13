@@ -1,4 +1,3 @@
-DROP TABLE jobs;
 
 CREATE TABLE jobs (
     id              SERIAL PRIMARY KEY,
