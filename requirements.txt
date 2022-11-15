@@ -1,4 +1,3 @@
+pika
 psycopg2
-redis
-rq
 Mastodon.py
