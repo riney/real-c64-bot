@@ -1,0 +1,4 @@
+FROM ubuntu:latest
+WORKDIR /app
+COPY . /app
+RUN /app/scripts/install_vicetools.sh
