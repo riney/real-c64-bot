@@ -10,13 +10,13 @@ reply to the original message.
 
 * Listeners stream in messaages from their respective sources (Mastodon, Discord... pigeons) and enqueue them,
 * A chain of workers handle the message:
-    * Code is extracted from the message and tokenized
+    * Code is extracted from the message and tokenized (using 'petcat' from the VICE project)
     * The tokenized code is uploaded to the C64
     * Video capture is started, and the code is executed
     * A reply is sent to the original source, with the video attached
-    
+
 ```mermaid 
-flowchart LR
+flowchart
     subgraph queues
         direction TB
 
