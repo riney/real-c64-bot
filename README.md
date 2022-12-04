@@ -54,3 +54,11 @@ flowchart
         replyQueue -- processed by --> replyWorker
     end
 ```
+
+## TODO
+
+- [] Listeners
+    - [] Mastodon listener
+    - [] Discord listener
+- [] Workers
+- [] Utilities (I know utilities are bad I'll change it when I have a better name OK)
