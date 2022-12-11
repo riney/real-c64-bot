@@ -5,7 +5,10 @@ class WorkQueue:
     QUEUE_NAME = "incoming_messages"
 
     def __init__(self, host, username, password):
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters('rabbit.local'))
+        credentials = pika.PlainCredentials(username, password)
+        self.connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host = host, credentials = credentials))
+
         self.channel = self.connection.channel()
         self.channel.queue_declare(queue=WorkQueue.QUEUE_NAME)
 

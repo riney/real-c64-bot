@@ -1,14 +1,14 @@
 {
-    "redis": {
-        "host": "redis.local",
-        "port": 6379,
-        "password": ""
+    "rabbitmq": {
+        "host": "localhost",
+        "username": "guest",
+        "password": "guest"
     },
 
     "postgres": {
-        "host": "postgres.local",
+        "host": "localhost",
         "database": "realc64bot",
-        "user": "jack",
+        "username": "jack",
         "password": "jackattack"
     },
 
@@ -19,5 +19,10 @@
     "commands": {
         "create_prg": "petcat -w2 -o $OUT",
         "record": "ffmpeg -f v4l2 -i /dev/video0 -t 30 -c:v h264_omx -profile:v high -b:v 2500k $OUT.mkv"
+    },
+
+    "mastodon": {
+        "account": "realc64bot",
+        "secrets": "mastodon_realc64bot.secret"
     }
 }

@@ -2,10 +2,6 @@ import json
 import logging
 import time
 import requests
-from redis import Redis
-from rq import Queue
-
-from realc64bot.workers import execute_tweet
 
 CONFIG_FILE = 'config.json'
 

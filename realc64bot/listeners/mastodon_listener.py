@@ -1,6 +1,7 @@
 import json, pprint, sys, time, traceback
 from mastodon import CallbackStreamListener, Mastodon
-from .util import WorkQueue
+from realc64bot.config import Config
+from realc64bot.connectors.work_queue import WorkQueue
 
 mastodon = None
 work_queue = None
@@ -20,18 +21,35 @@ def handle_notification(notification):
 def handle_unknown(name, unknown_event):
     print(f"mastodon_listener: got an unknown event #{name}")
 
+def handle_update(status):
+    print(f"mastodon_listener: got an update #{status}")
+
+def handle_conversation(conversation):
+    print(f"mastodon_listener: got a conversation #{conversation}")
+
+def handle_heartbeat():
+    print("mastodon_listener: heartbeat detected")
+
 def main():
+    config = Config().values()
+
     try:
         print("mastodon_listener: connecting to work queue")
-        work_queue = WorkQueue('rabbit.local', 'user', 'pass')
+        work_queue = WorkQueue(
+            config['rabbitmq']['host'],
+            config['rabbitmq']['username'],
+            config['rabbitmq']['password'])
 
         print("mastodon_listener: connecting to mastodon")
-        mastodon = Mastodon(client_id = 'mastodon_test.secret')
+        secret = config['mastodon']['secrets']
+        mastodon = Mastodon(client_id = secret)
         print("mastodon_listener: setting version")
         v = mastodon.retrieve_mastodon_version()
         print(f"mastodon_listener: got version #{v}")
         listener = CallbackStreamListener(
-            notification_handler=handle_notification,
+            notification_handler = handle_notification,
+            conversation_handler = handle_conversation,
+            update_handler = handle_update,
             unknown_event_handler = handle_unknown)
 
         print("mastodon_listener: starting notification stream...")
@@ -43,6 +61,7 @@ def main():
 
         while True:
             time.sleep(1)
+            print(f"Stream healthy? {mastodon.stream_healthy()}")
 
     except KeyboardInterrupt:
         print("mastodon_listener: Shutdown requested... closing Mastodon stream")

@@ -59,6 +59,16 @@ flowchart
 
 - [] Listeners
     - [] Mastodon listener
+        - [X] first pass (using the hashtag stream)
+        - [] understanding of @mentions
     - [] Discord listener
 - [] Workers
+    - [] message worker
+    - [] tokenize worker
+    - [] uploadCapture worker
+    - [] reply worker
+- [] Devopsly stuff
+    - [X] vicetools image builder
+    - [X] compose file for local dev (rabbit, postgres)
+
 - [] Utilities (I know utilities are bad I'll change it when I have a better name OK)
