@@ -24,11 +24,11 @@ def handle_unknown(name, unknown_event):
 def handle_update(status):
     print(f"mastodon_listener: got an update #{status}")
 
+def handle_local_update(status):
+    print(f"mastodon_listener: got a local update #{status}")
+
 def handle_conversation(conversation):
     print(f"mastodon_listener: got a conversation #{conversation}")
-
-def handle_heartbeat():
-    print("mastodon_listener: heartbeat detected")
 
 def main():
     config = Config().values()
@@ -50,6 +50,7 @@ def main():
             notification_handler = handle_notification,
             conversation_handler = handle_conversation,
             update_handler = handle_update,
+            local_update_handler = handle_local_update,
             unknown_event_handler = handle_unknown)
 
         print("mastodon_listener: starting notification stream...")
