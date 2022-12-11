@@ -2,7 +2,7 @@
 
 ## Description
 
-A bot to execute BASIC code, received in messages from a variety of sources,
+A bot to execute BASIC code received in messages from a variety of sources
 on a real Commodore 64, capture the results in a 30-second video, and post the
 video back as a reply to the original message.
 
