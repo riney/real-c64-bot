@@ -57,23 +57,23 @@ flowchart
 
 ## TODO
 
-- [] Listeners
-    - [] Mastodon listener
+- [ ] Listeners
+    - [ ] Mastodon listener
         - [X] first pass (using the hashtag stream)
         - [X] understanding of @mentions
         - [X] toot HTML parsing
-    - [] Discord listener
-- [] Connectors
-    - [] Queue connector
+    - [ ] Discord listener
+- [ ] Connectors
+    - [ ] Queue connector
       - [X] first pass
-      - [] support all queues
-- [] Workers
-    - [] message worker
-    - [] tokenize worker
-    - [] uploadCapture worker
-    - [] reply worker
-- [] Devopsly stuff
+      - [ ] support all queues
+- [ ] Workers
+    - [ ] message worker
+    - [ ] tokenize worker
+    - [ ] uploadCapture worker
+    - [ ] reply worker
+- [ ] Devopsly stuff
     - [X] vicetools image builder
     - [X] compose file for local dev (rabbit, postgres)
-    - [] remote access for app server
-    - [] gitops
+    - [ ] remote access for app server
+    - [ ] gitops
