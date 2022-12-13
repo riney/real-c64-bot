@@ -1,25 +1,37 @@
 import json
+import logging
 import pika
 
 class WorkQueue:
-    QUEUE_NAME = "incoming_messages"
+    MESSAGES_QUEUE         = "messages"
+    TOKENIZE_QUEUE         = "tokenize"
+    RUN_AND_CAPTURE_QUEUE  = "runAndCapture"
+    UPLOAD_VIDEO_QUEUE     = "upload"
+    REPLY_QUEUE            = "reply"
+
+    QUEUES = [ MESSAGES_QUEUE, TOKENIZE_QUEUE, RUN_AND_CAPTURE_QUEUE, UPLOAD_VIDEO_QUEUE, REPLY_QUEUE ]
 
     def __init__(self, host, username, password):
+        #logging.getLogger("pika").setLevel(logging.DEBUG)
+        print(f"WorkQueue: init")
+
         credentials = pika.PlainCredentials(username, password)
         self.connection = pika.BlockingConnection(
             pika.ConnectionParameters(host = host, credentials = credentials))
 
         self.channel = self.connection.channel()
-        self.channel.queue_declare(queue=WorkQueue.QUEUE_NAME)
+        
+        print(f"WorkQueue: declaring queues")
+        for queue in self.QUEUES:
+            self.channel.queue_declare(queue=queue)
 
-    def enqueue(self, message):
+    def enqueue(self, message, queue):
+        print(f"WorkQueue: enqueue: publishing {json.dumps(message)} to {queue}")
+
         self.channel.basic_publish(
-            exchange = '',
-            routing_key = WorkQueue.QUEUE_NAME,
-            body = json.dumps(message),
-            properties = pika.BasicProperties(
-                delivery_mode = 2
-            )
+            '',
+            queue,
+            json.dumps(message)
         )
 
     def close(self):

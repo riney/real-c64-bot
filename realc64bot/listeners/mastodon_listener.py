@@ -1,16 +1,15 @@
-import json, pprint, sys, time, traceback
+import logging, sys, time, traceback
 from bs4 import BeautifulSoup, NavigableString
 from mastodon import CallbackStreamListener, Mastodon
 from realc64bot.config import Config
 from realc64bot.connectors.work_queue import WorkQueue
 
 mastodon = None
-work_queue = None
+q = None
 
 def handle_notification(notification):
     print("mastodon_listener: handle_notification: got an notification!")
     type = notification['type']
-    print(f"type = {type}")
     if type == 'mention':
         id = notification['status']['id']
         content = notification['status']['content']
@@ -21,7 +20,10 @@ def handle_notification(notification):
             "message_source": "mastodon",
             "content": toot,
         }
-        #work_queue.enqueue(message)
+
+        print(f"mastodon_listener: handle_notification: queue channel open? {q.channel.is_open}")
+        print(f"mastodon_listener: handle_notification: enqueuing message {message}")
+        q.enqueue(message, WorkQueue.MESSAGES_QUEUE)
 
 def strip_toot(content):
     soup = BeautifulSoup(content, 'lxml')
@@ -34,14 +36,17 @@ def main():
 
     try:
         print("mastodon_listener: connecting to work queue")
-        work_queue = WorkQueue(
+        global q
+        q = WorkQueue(
             config['rabbitmq']['host'],
             config['rabbitmq']['username'],
             config['rabbitmq']['password'])
 
         print("mastodon_listener: connecting to mastodon")
         secret = config['mastodon']['secrets']
+        global mastodon
         mastodon = Mastodon(access_token = secret)
+        
         print("mastodon_listener: setting version")
         v = mastodon.retrieve_mastodon_version()
         print(f"mastodon_listener: got version #{v}")
@@ -60,7 +65,7 @@ def main():
         print("mastodon_listener: Shutdown requested... closing Mastodon stream")
         stream.close()
         print("mastodon_listener: Closing work queue")
-        work_queue.close()
+        q.close()
         print("mastodon_listener: exiting")
     except Exception:
         print("mastodon_listener: exception")
