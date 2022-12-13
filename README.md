@@ -28,7 +28,8 @@ flowchart
 
         messagesQueue
         tokenizeQueue
-        uploadCaptureQueue
+        runAndCaptureQueue
+        uploadVideoQueue
         replyQueue
     end
 
@@ -42,15 +43,18 @@ flowchart
 
         messageWorker
         tokenizeWorker 
-        uploadCaptureWorker
+        runAndCaptureWorker
+        uploadVideoWorker
         replyWorker
 
         messagesQueue -- processed by --> messageWorker
         messageWorker -- enqueue --> tokenizeQueue
         tokenizeQueue -- processed by --> tokenizeWorker
-        tokenizeWorker -- enqueue --> uploadCaptureQueue
-        uploadCaptureQueue -- processed by --> uploadCaptureWorker
-        uploadCaptureWorker -- enqueue --> replyQueue
+        tokenizeWorker -- enqueue --> runAndCaptureQueue
+        runAndCaptureQueue -- processed by --> runAndCaptureWorker
+        runAndCaptureWorker -- enqueue --> uploadVideoQueue
+        uploadVideoQueue -- processed by --> uploadVideoWorker
+        uploadVideoWorker -- enqueue --> replyQueue
         replyQueue -- processed by --> replyWorker
     end
 ```
