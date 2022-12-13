@@ -1,3 +1,5 @@
+beautifulsoup4
+lxml
 pika
 psycopg2
 Mastodon.py
