@@ -66,12 +66,15 @@ flowchart
 - [ ] Connectors
     - [ ] Queue connector
       - [X] first pass
-      - [ ] support all queues
+      - [X] support all queues
 - [ ] Workers
     - [ ] message worker
     - [ ] tokenize worker
     - [ ] uploadCapture worker
     - [ ] reply worker
+- [ ] Don't suck as a programmer
+    - [ ] Logging
+    - [ ] Test framework
 - [ ] Devopsly stuff
     - [X] vicetools image builder
     - [X] compose file for local dev (rabbit, postgres)
