@@ -60,8 +60,13 @@ flowchart
 - [] Listeners
     - [] Mastodon listener
         - [X] first pass (using the hashtag stream)
-        - [] understanding of @mentions
+        - [X] understanding of @mentions
+        - [X] toot HTML parsing
     - [] Discord listener
+- [] Connectors
+    - [] Queue connector
+      - [X] first pass
+      - [] support all queues
 - [] Workers
     - [] message worker
     - [] tokenize worker
@@ -70,5 +75,5 @@ flowchart
 - [] Devopsly stuff
     - [X] vicetools image builder
     - [X] compose file for local dev (rabbit, postgres)
-
-- [] Utilities (I know utilities are bad I'll change it when I have a better name OK)
+    - [] remote access for app server
+    - [] gitops
