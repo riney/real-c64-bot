@@ -1,5 +1,7 @@
 beautifulsoup4
+discord.py
 lxml
 pika
 psycopg2
+pytest
 Mastodon.py
