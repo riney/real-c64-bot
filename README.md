@@ -13,13 +13,13 @@ cartridge, which is just about the slickest piece of hardware I've come across.
 
 ## Concepts
 
-* Listeners stream in messages from their respective sources (Mastodon, Discord... pigeons) and enqueue them,
+* Gateways stream in messages from their respective sources (Mastodon, Discord... pigeons) and enqueue them,
 * A chain of workers handle the message:
     * Code is extracted from the message and tokenized (using [petcat](https://vice-emu.sourceforge.io/vice_16.html) from the [VICE](https://vice-emu.sourceforge.io/vice_16.html) project)
     * The tokenized code is uploaded to the C64 (using the Ultimate's FTP capabilities)
     * Video capture is started, and the code is executed (using the Ultimate's Telnet remote control features)
         * Video capture is handled by a Raspberry Pi 4 with a USB CVBS (composite) capture device (to be documented)
-    * A reply is sent to the original source, with the video attached.
+    * A reply is sent to the original source via the appropriate gateway, with the video attached.
 
 ```mermaid 
 flowchart
@@ -33,9 +33,9 @@ flowchart
         replyQueue
     end
 
-    subgraph listeners
-        MastodonListener -- enqueue --> messagesQueue
-        DiscordListener -- enqueue --> messagesQueue
+    subgraph gateways
+        MastodonGateway -- enqueue --> messagesQueue
+        DiscordGateway -- enqueue --> messagesQueue
     end
     
     subgraph workers
@@ -61,16 +61,20 @@ flowchart
 
 ## TODO
 
-- [ ] Listeners
-    - [ ] Mastodon listener
+- [ ] Gateways
+    - [ ] Mastodon gateway
         - [X] first pass (using the hashtag stream)
         - [X] understanding of @mentions
         - [X] toot HTML parsing
-    - [ ] Discord listener
+        - [ ] replys
+    - [ ] Discord gateway
 - [ ] Connectors
     - [ ] Queue connector
       - [X] first pass
       - [X] support all queues
+    - [ ] DB connector
+    - [ ] Ultimate connector
+    - [ ] Tokenizer connector
 - [ ] Workers
     - [ ] message worker
     - [ ] tokenize worker
