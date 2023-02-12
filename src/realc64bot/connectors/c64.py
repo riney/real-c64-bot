@@ -1,3 +1,6 @@
+import subprocess
+
 def tokenize(text, filename):
-    return
+    cmd = ""
+    subprocess.run([cmd], input=text)
     
