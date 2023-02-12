@@ -1,0 +1,4 @@
+FROM realc64bot/vicetools:latest
+WORKDIR /app
+COPY . /app
+RUN /app/scripts/first_time_setup.sh
