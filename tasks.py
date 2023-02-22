@@ -18,4 +18,4 @@ def all_containers(c):
 
 @task(app_container)
 def test(c):
-    c.run("docker run -it realc64bot/app pytest")
+    c.run("docker run -it --env PYTHONPATH=src realc64bot/app pytest")
