@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM python:3.11-buster
 WORKDIR /app
-COPY . /app
+COPY scripts/install_vicetools.sh scripts/install_vicetools.sh
 RUN /app/scripts/install_vicetools.sh

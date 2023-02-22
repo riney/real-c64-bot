@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/bin/bash
 
 # install_vicetools.sh - checks out and builds VICE in a headless mode,
 # in an Ubuntu environment.
