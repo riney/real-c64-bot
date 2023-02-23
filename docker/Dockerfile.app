@@ -1,4 +1,4 @@
-FROM realc64bot/app
+FROM realc64bot/base
 WORKDIR /app
 
 COPY . .
