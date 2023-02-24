@@ -1,6 +1,6 @@
 import os
 import pytest
-from realc64bot.connectors.c64 import tokenize
+from realc64bot.connectors.vicetools import tokenize
 
 def test_vicetools_exists():
     retval = os.system('which petcat')
