@@ -1,8 +1,8 @@
+aio-pika
 beautifulsoup4
 discord.py
 invoke
 lxml
-pika
 psycopg2
 pytest
 Mastodon.py

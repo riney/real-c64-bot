@@ -6,7 +6,7 @@
     },
 
     "postgres": {
-        "host": "localhost",
+        "host": "postgres",
         "database": "realc64bot",
         "username": "jack",
         "password": "jackattack"

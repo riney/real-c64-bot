@@ -1,3 +1,4 @@
 #!/bin/sh
 
-PYTHONPATH=src python3 realc64bot/gateways/mastodon_gateway.py
+#PYTHONPATH=src python src/realc64bot/gateways/mastodon_source.py
+PYTHONPATH=src python src/realc64bot/gateways/mastodon_sink.py
