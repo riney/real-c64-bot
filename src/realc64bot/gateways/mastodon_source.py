@@ -1,11 +1,12 @@
-import logging, sys, time, traceback
+import asyncio, json, logging, sys, time, traceback
+import aio_pika
 from bs4 import BeautifulSoup, NavigableString
 from mastodon import CallbackStreamListener, Mastodon
 from realc64bot.config import Config
 from realc64bot.connectors.work_queue import WorkQueue
 
 mastodon = None
-q = None
+channel = None
 
 def handle_notification(notification):
     print("mastodon_source: handle_notification: got an notification!")
@@ -22,9 +23,8 @@ def handle_notification(notification):
             "content": toot,
         }
 
-        print(f"mastodon_source: handle_notification: queue channel open? {q.channel.is_open}")
         print(f"mastodon_source: handle_notification: enqueuing message {message}")
-        q.enqueue(message, WorkQueue.MESSAGES_QUEUE)
+        loop.create_task(enqueue(message))
 
 def strip_toot(content):
     soup = BeautifulSoup(content, 'lxml')
@@ -32,39 +32,46 @@ def strip_toot(content):
 
     return navstrs[0].strip() or ""
 
-def main():
+async def enqueue(message) -> None:
+    print("mastodon_source: publishing message")
+    await channel.default_exchange.publish(
+        aio_pika.Message(body=bytes(json.dumps(message), encoding='utf8')),
+        routing_key=WorkQueue.MESSAGES_QUEUE,
+    )
+
+async def main() -> None:
     config = Config().values()
 
     try:
         print("mastodon_source: connecting to work queue")
-        global q
-        q = WorkQueue()
-
-        print("mastodon_source: connecting to mastodon")
-        secret = config['mastodon']['secrets']
-        global mastodon
-        mastodon = Mastodon(access_token = secret)
+        connection = await aio_pika.connect_robust(f"amqp://{config['rabbitmq']['username']}:{config['rabbitmq']['password']}@{config['rabbitmq']['host']}")
+        global channel
+        channel = await connection.channel()
         
+        print("mastodon_source: connecting to mastodon")
+        global mastodon
+        mastodon = Mastodon(
+            client_id=config['mastodon']['client_id'],
+            access_token=config['mastodon']['access_token'])
+       
         print("mastodon_source: setting version")
         v = mastodon.retrieve_mastodon_version()
         print(f"mastodon_source: got version #{v}")
         listener = CallbackStreamListener(notification_handler = handle_notification)
 
         print("mastodon_source: starting notification stream...")
+        global stream
         stream = mastodon.stream_user(listener,
             run_async = True,
             reconnect_async = True,
         )
 
-        while True:
-            time.sleep(1)
+        global loop
+        loop = asyncio.get_running_loop()
 
-    except KeyboardInterrupt:
-        print("mastodon_source: Shutdown requested... closing Mastodon stream")
-        stream.close()
-        print("mastodon_source: Closing work queue")
-        q.close()
-        print("mastodon_source: exiting")
+        print("mastodon_source: awaiting the future...")
+        await asyncio.Future()
+        
     except Exception:
         print("mastodon_source: exception")
 
@@ -73,4 +80,10 @@ def main():
 
 if __name__ == "__main__":
     print("mastodon_source: in startup")
-    main()
+    try:
+        asyncio.run(main())
+
+    except KeyboardInterrupt:
+        print("mastodon_source: Shutdown requested... closing Mastodon stream")
+        stream.close()
+        print("mastodon_source: exiting")

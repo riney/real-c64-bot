@@ -23,6 +23,7 @@
 
     "mastodon": {
         "account": "realc64bot",
-        "secrets": "realc64bot.user.secret"
+        "client_id":"realc64bot_clientcred.secret",
+        "access_token": "realc64bot_usercred.secret"
     }
 }
