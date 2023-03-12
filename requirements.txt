@@ -5,4 +5,5 @@ invoke
 lxml
 psycopg2
 pytest
+supervisor  
 Mastodon.py
