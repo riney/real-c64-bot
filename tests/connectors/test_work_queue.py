@@ -1,5 +1,5 @@
 import pytest
-from realc64bot.connectors.work_queue import WorkQueue
+from realc64bot.workers.queue_worker import WorkQueue
 
 def test_connect():
     queue = WorkQueue()

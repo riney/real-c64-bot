@@ -3,7 +3,7 @@ from aio_pika import connect, Message
 from bs4 import BeautifulSoup, NavigableString
 from mastodon import CallbackStreamListener, Mastodon
 from realc64bot.config import Config
-from realc64bot.connectors.work_queue import WorkQueue
+from realc64bot.workers.queue_worker import WorkQueue
 
 mastodon = None
 q = None 
@@ -40,7 +40,7 @@ async def main() -> None:
         
     except asyncio.exceptions.CancelledError:
         print("mastodon_sink: shutdown requested")
-        print(f"At this point, channel is {channel}")
+    
     except Exception:
         print("mastodon_sink: exception")
 

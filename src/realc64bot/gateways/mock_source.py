@@ -1,45 +1,43 @@
-import logging, random, sys, traceback
+import asyncio
+import json
+import logging 
+import random
+import sys
+import aio_pika
 from realc64bot.config import Config
-from realc64bot.connectors.work_queue import WorkQueue
+from realc64bot.workers.queue_worker import QueueWorker
 
-q = None
+logger = logging.getLogger('mock_source')
+logging.basicConfig(level=logging.INFO)
 
-def mock_notification(id, content):
+async def mock_notification(id, content, channel) -> None:
         message = {
             "message_id": id,
             "message_source": "mock",
             "content": content,
         }
 
-        print(f"mock_source: mock_notification: queue channel open? {q.channel.is_open}")
         print(f"mock_source: mock_notification: enqueuing message {message}")
 
-        q.enqueue(message, WorkQueue.MESSAGES_QUEUE)
+        await channel.default_exchange.publish(
+            aio_pika.Message(body=json.dumps(message, indent=2).encode()),
+            routing_key=QueueWorker.MESSAGES_QUEUE,
+        )
 
-def main():
+async def main() -> None:
     config = Config().values()
-
     random.seed()
 
-    try:
-        print("mock_source: connecting to work queue")
-        global q
-        q = WorkQueue()
-        
-        id = str(random.randint(0, 100000))
+    q_url = f"amqp://{config['rabbitmq']['username']}:{config['rabbitmq']['password']}@{config['rabbitmq']['host']}"
+    logger.info(f'Connecting to {q_url}.')
+    connection = await aio_pika.connect_robust(q_url)
 
-        mock_notification(id, '10 PRINT "HELLO MOCK"')        
-    except Exception:
-        print("mock_source: exception")
+    async with connection:
+        channel = await connection.channel()
 
-        traceback.print_exc(file=sys.stdout)
-
-    print("mock_source: Closing work queue")
-    q.close()
-    
-    print("mock_source: exiting")    
-    sys.exit(0)
+        await mock_notification(random.randint(1,100000), '10 PRINT "HELLO MOCK"', channel)
 
 if __name__ == "__main__":
     print("mock_source: in startup")
-    main()
+
+    asyncio.run(main())
