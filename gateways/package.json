@@ -1,0 +1,24 @@
+{
+  "name": "realc64bot-gateways",
+  "version": "1.0.0",
+  "description": "Async adapter between sources of messages (discord, mastodon, etc.) and the work queues",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/riney/real-c64-bot.git"
+  },
+  "author": "John Riney III <john@rineysoft.com> (https://8bithe.art)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/riney/real-c64-bot/issues"
+  },
+  "homepage": "https://github.com/riney/real-c64-bot#readme",
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "discord.js": "^14.15.2",
+    "masto": "^6.7.7"
+  }
+}
