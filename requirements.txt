@@ -1,9 +1,0 @@
-aio-pika
-beautifulsoup4
-discord.py
-invoke
-lxml
-psycopg2
-pytest
-supervisor  
-Mastodon.py
