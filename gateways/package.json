@@ -1,0 +1,17 @@
+{
+  "name": "gateways",
+  "version": "1.0.0",
+  "description": "",
+  "main": "mastodon.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "discord": "node ./discord.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "eris": "^0.18.0",
+    "rabbitmq-client": "^5.0.1"
+  }
+}

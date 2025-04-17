@@ -134,4 +134,5 @@ dmypy.json
 # SEKRITS
 credentials.txt
 *.secret
+*.token
 

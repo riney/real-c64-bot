@@ -1,0 +1,12 @@
+FROM node:current-slim
+WORKDIR /app
+
+# checks out and builds VICE in a headless mode in an Ubuntu environment.
+RUN apt update
+RUN DEBIAN_FRONTEND=noninteractive TZ="America/Los_Angeles" apt -y install tzdata
+RUN apt install -y xa65 autoconf build-essential byacc texi2html flex libreadline-dev libxaw7-dev texinfo libxaw7-dev libgtk2.0-cil-dev libgtkglext1-dev libpulse-dev libcurl4-openssl-dev dos2unix git
+RUN git clone https://github.com/VICE-Team/svn-mirror.git vice-emu-code
+WORKDIR ./vice-emu-code/vice
+RUN ./autogen.sh
+RUN ./configure --enable-headlessui --disable-pdf-docs --without-alsa
+RUN make && make install

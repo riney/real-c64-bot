@@ -1,0 +1,3 @@
+FROM real-c64-bot/vicetools:latest
+WORKDIR /app
+COPY workers .

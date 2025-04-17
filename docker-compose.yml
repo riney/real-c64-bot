@@ -1,0 +1,32 @@
+services:
+    # db:
+    #     image: postgres
+    #     restart: always
+    #     environment:
+    #         POSTGRES_USER: jack
+    #         POSTGRES_PASSWORD: jackattack
+    #     ports:
+    #         - "127.0.0.1:5432:5432"
+    #     volumes:
+    #       - ./db/schema.sql:/docker-entrypoint-initdb.d/create_tables.sql
+
+    discord_gateway:
+        image: real-c64-bot/gateways:latest
+        environment:
+            foo: "bar"
+        command: npm run discord
+        depends_on:
+            - rabbitmq
+
+    # c64_worker_1:
+    #     image: real-c64-bot/workers:latest
+    #     environment:
+    #         foo: "bar"
+    #     depends_on:
+    #         - rabbitmq
+
+    rabbitmq:
+        image: rabbitmq:latest
+        hostname: "rabbitmq"
+        ports:
+            - "127.0.0.1:5672:5672"
